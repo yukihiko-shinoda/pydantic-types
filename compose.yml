@@ -1,0 +1,7 @@
+services:
+  pydantic-types:
+    build: .
+    image: futureys/pydantic-types:development
+    volumes:
+      - .:/workspace
+      - /workspace/.venv
