@@ -64,6 +64,22 @@ class TestStringSlashToDateTime:
         with pytest.raises(ValidationError):
             create(StubStringSlashToDateTime, [value])
 
+    @pytest.mark.parametrize(
+        "value",
+        [
+            123,
+            None,
+            [],
+            {},
+            datetime.date(2020, 1, 1),
+        ],
+    )
+    # Reason: This Any is correct
+    def test_datetime_must_be_from_str_direct(self, value: Any) -> None:  # noqa: ANN401
+        """Test direct call to datetime_must_be_from_str with non-string."""
+        with pytest.raises(TypeError, match="string required"):
+            StringSlashToDateTime.datetime_must_be_from_str(value)
+
 
 @dataclass
 class StubStringNumberOnlyToDateTime:
@@ -154,8 +170,6 @@ class TestStringSlashMonthDayOnlyToDatetime:
             "0101",
             "2020/01/01",
             "01/01/01",
-            "01/1",
-            "1/01",
             "/01",
             "01/",
             "01",
@@ -169,4 +183,20 @@ class TestStringSlashMonthDayOnlyToDatetime:
     def test_error(self, value: Any) -> None:  # noqa: ANN401
         """Pydantic should raise ValidationError."""
         with pytest.raises(ValidationError):
-            create(StubStringNumberOnlyToDateTime, [value])
+            create(StubStringSlashMonthDayOnlyToDatetime, [value])
+
+    @pytest.mark.parametrize(
+        "value",
+        [
+            123,
+            None,
+            [],
+            {},
+            datetime.date(2020, 1, 1),
+        ],
+    )
+    # Reason: This Any is correct
+    def test_parse_date_direct(self, value: Any) -> None:  # noqa: ANN401
+        """Test direct call to parse_date with non-string."""
+        with pytest.raises(TypeError, match="string required"):
+            StringSlashMonthDayOnlyToDatetime.parse_date(value)

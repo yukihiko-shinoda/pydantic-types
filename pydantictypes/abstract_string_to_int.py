@@ -21,8 +21,6 @@ from pydantic.v1.utils import almost_equal_floats
 from pydantic_core.core_schema import no_info_after_validator_function
 
 if TYPE_CHECKING:
-    # Reason: Prioritize typing
-    from pydantic.v1.types import CallableGenerator  # type: ignore[attr-defined] # noqa: F401
     from pydantic.v1.validators import Number
     from pydantic_core import CoreSchema
 
