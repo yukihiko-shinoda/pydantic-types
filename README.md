@@ -2,6 +2,7 @@
 
 [![Test](https://github.com/yukihiko-shinoda/pydantic-types/workflows/Test/badge.svg)](https://github.com/yukihiko-shinoda/pydantic-types/actions?query=workflow%3ATest)
 [![CodeQL](https://github.com/yukihiko-shinoda/pydantic-types/workflows/CodeQL/badge.svg)](https://github.com/yukihiko-shinoda/pydantic-types/actions?query=workflow%3ACodeQL)
+[![Code Coverage](https://qlty.sh/gh/yukihiko-shinoda/projects/pydantic-types/coverage.svg)](https://qlty.sh/gh/yukihiko-shinoda/projects/pydantic-types)
 [![Maintainability](https://qlty.sh/badges/11a7c146-f6ee-4d74-8b63-2d2e963ef988/maintainability.svg)](https://qlty.sh/gh/yukihiko-shinoda/projects/pydantic-types)
 [![Dependabot](https://flat.badgen.net/github/dependabot/yukihiko-shinoda/pydantic-types?icon=dependabot)](https://github.com/yukihiko-shinoda/pydantic-types/security/dependabot)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/pydantictypes)](https://pypi.org/project/pydantictypes)
