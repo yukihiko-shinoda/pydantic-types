@@ -29,8 +29,7 @@ class BaseTestConstraintFunction(ABC):
         """Test constraint function returns proper Annotated type."""
         result = self.get_constraint_function()()
         assert hasattr(result, "__metadata__")
-        expected_metadata_count = self.get_expected_metadata_count()
-        assert len(result.__metadata__) == expected_metadata_count
+        assert len(result.__metadata__) == self.get_expected_metadata_count()
 
     def test_constringtoint_basic(self) -> None:
         """Tests constraint function returns proper type."""

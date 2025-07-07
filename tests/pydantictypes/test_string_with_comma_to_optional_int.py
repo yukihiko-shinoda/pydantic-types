@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import datetime
+from sys import version_info
 from typing import TYPE_CHECKING
 from typing import Any
 from typing import Callable
@@ -83,7 +84,8 @@ class TestConstraintFunction(BaseTestConstraintFunction):
 
     def get_expected_metadata_count(self) -> int:
         """Return expected metadata count for optional int types."""
-        return 2  # BeforeValidator, Unpack
+        # BeforeValidator, 3 validators, 1 Interval constraint
+        return 2 if version_info >= (3, 11) else 5
 
     # Any is needed here to match the base class signature and handle Optional[int]
     def get_expected_origin(self) -> Any:  # noqa: ANN401
