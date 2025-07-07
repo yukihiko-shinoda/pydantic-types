@@ -175,6 +175,9 @@ exclude = [
 
 [tool.mypy]
 strict = true
+plugins = [
+    "pydantic.mypy",
+]
 
 [tool.pylint.basic]
 docstring-min-length = "7"

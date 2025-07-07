@@ -1,14 +1,22 @@
 """Tests for symbol_yen_string_to_int.py ."""
 
 import datetime
+from typing import TYPE_CHECKING
 from typing import Any
+from typing import Callable
 
 import pytest
 from pydantic import ValidationError
 from pydantic.dataclasses import dataclass
 
 from pydantictypes.symbol_yen_string_to_int import SymbolYenStringToInt
+from pydantictypes.symbol_yen_string_to_int import constringtoint
+from tests.pydantictypes import BaseTestConstraintFunction
+from tests.pydantictypes import BaseTestImportFallback
 from tests.pydantictypes import create
+
+if TYPE_CHECKING:
+    from types import ModuleType
 
 
 @dataclass
@@ -61,3 +69,22 @@ class Test:
         """Property should be converted to int."""
         with pytest.raises(ValidationError):
             create(Stub, [value])
+
+
+class TestConstraintFunction(BaseTestConstraintFunction):
+    """Tests for constringtoint function."""
+
+    def get_constraint_function(self) -> Callable[..., Any]:
+        """Return the constringtoint function for this module."""
+        return constringtoint
+
+
+class TestImportFallback(BaseTestImportFallback):
+    """Tests for import fallback behavior."""
+
+    def get_module(self) -> "ModuleType":
+        """Return the module to test for import fallback."""
+        # Reason: For testing import fallback behavior
+        from pydantictypes import symbol_yen_string_to_int  # pylint: disable=import-outside-toplevel  # noqa: PLC0415
+
+        return symbol_yen_string_to_int

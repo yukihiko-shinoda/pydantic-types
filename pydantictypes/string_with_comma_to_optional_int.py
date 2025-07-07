@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from contextlib import suppress
+from sys import version_info
 from typing import Optional
 
 from pydantic import BeforeValidator
@@ -19,10 +21,8 @@ try:
 except ImportError:
     # Reason: Maybe mypy's bug
     from typing_extensions import Annotated  # type: ignore[assignment]
-try:
+with suppress(ImportError):
     from typing import Unpack
-except ImportError:
-    from typing_extensions import Unpack
 
 __all__ = [
     "StrictStringWithCommaToOptionalInt",
@@ -52,11 +52,15 @@ def constringwithcommatooptionalint(  # noqa: PLR0913 pylint: disable=too-many-a
     Returns:
         The wrapped integer type.
     """
-    return Annotated[  # type: ignore[return-value]
-        Optional[int],
-        BeforeValidator(OptionalIntegerMustBeFromStr(Utility.convert_string_with_comma_to_int).validate),
-        Unpack[abstract_constringtooptionalint(strict=strict, gt=gt, ge=ge, lt=lt, le=le, multiple_of=multiple_of)],
-    ]
+    constraints = abstract_constringtooptionalint(strict=strict, gt=gt, ge=ge, lt=lt, le=le, multiple_of=multiple_of)
+    before_validator = BeforeValidator(OptionalIntegerMustBeFromStr(Utility.convert_string_with_comma_to_int).validate)
+    if version_info >= (3, 11):
+        return Annotated[Optional[int], before_validator, Unpack[constraints]]  # type: ignore[return-value]
+    # Filter out None values
+    valid_constraints = tuple(c for c in constraints if c is not None)
+    # Reason: Cannot use star expression in index on Python 3.7 (syntax was added in Python 3.11)
+    annotations = (Optional[int], before_validator) + valid_constraints  # noqa: RUF005
+    return Annotated[annotations]  # type: ignore[return-value]
 
 
 StrictStringWithCommaToOptionalInt = Annotated[

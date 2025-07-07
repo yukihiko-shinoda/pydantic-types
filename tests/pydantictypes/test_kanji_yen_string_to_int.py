@@ -1,14 +1,22 @@
 """Tests for string_with_comma_to_int.py ."""
 
 import datetime
+from typing import TYPE_CHECKING
 from typing import Any
+from typing import Callable
 
 import pytest
 from pydantic.dataclasses import dataclass
 from pydantic_core import ValidationError
 
 from pydantictypes.kanji_yen_string_to_int import StrictKanjiYenStringToInt
+from pydantictypes.kanji_yen_string_to_int import constringtoint
+from tests.pydantictypes import BaseTestConstraintFunction
+from tests.pydantictypes import BaseTestImportFallback
 from tests.pydantictypes import create
+
+if TYPE_CHECKING:
+    from types import ModuleType
 
 
 @dataclass
@@ -16,7 +24,8 @@ class Stub:
     int_: StrictKanjiYenStringToInt
 
 
-class Test:
+# Reason: It's impossible to reduce duplicate code due to pytest's specification.
+class Test:  # pylint: disable=duplicate-code
     """Tests for StrictKanjiYenStringToInt."""
 
     @pytest.mark.parametrize(
@@ -65,3 +74,16 @@ class Test:
         """Pydantic should raise ValidationError."""
         with pytest.raises((ValidationError, TypeError)):
             create(Stub, [value])
+
+
+class TestConstraintFunction(BaseTestConstraintFunction):
+    def get_constraint_function(self) -> Callable[..., Any]:
+        return constringtoint
+
+
+class TestImportFallback(BaseTestImportFallback):
+    def get_module(self) -> "ModuleType":
+        # Reason: For testing import fallback behavior
+        from pydantictypes import kanji_yen_string_to_int  # pylint: disable=import-outside-toplevel  # noqa: PLC0415
+
+        return kanji_yen_string_to_int
