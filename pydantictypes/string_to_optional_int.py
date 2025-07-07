@@ -57,13 +57,14 @@ def constringtooptionalint(  # noqa: PLR0913 pylint: disable=too-many-arguments
     """
     constraints = abstract_constringtooptionalint(strict=strict, gt=gt, ge=ge, lt=lt, le=le, multiple_of=multiple_of)
     before_validator = BeforeValidator(OptionalIntegerMustBeFromStr(int).validate)
-    if version_info >= (3, 11):
-        return Annotated[Optional[int], before_validator, Unpack[constraints]]  # type: ignore[return-value]
-    # Filter out None values
-    valid_constraints = tuple(c for c in constraints if c is not None)
-    # Reason: Cannot use star expression in index on Python 3.7 (syntax was added in Python 3.11)
-    annotations = (Optional[int], before_validator) + valid_constraints  # noqa: RUF005
-    return Annotated[annotations]  # type: ignore[return-value]
+    # Reason: Following block is tested in different workflows in GitHub Actions
+    if version_info < (3, 11):  # pragma: no cover
+        # Filter out None values
+        valid_constraints = tuple(c for c in constraints if c is not None)
+        # Reason: Cannot use star expression in index on Python 3.7 (syntax was added in Python 3.11)
+        annotations = (Optional[int], before_validator) + valid_constraints  # noqa: RUF005
+        return Annotated[annotations]  # type: ignore[return-value]
+    return Annotated[Optional[int], before_validator, Unpack[constraints]]  # type: ignore[return-value]
 
 
 ConstrainedStringToOptionalInt = Annotated[
