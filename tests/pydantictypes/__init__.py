@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 V = TypeVar("V")
 
 
-def create(target_class: type[V], values: list[str]) -> V:
+def create(target_class: type[V], values: list[Any]) -> V:
     return target_class(*values)
 
 
