@@ -19,8 +19,7 @@ from pydantictypes.validators import optional_strict_int_validator
 try:
     from typing import Annotated
 except ImportError:
-    # Reason: Maybe mypy's bug
-    from typing_extensions import Annotated  # type: ignore[assignment]
+    from typing_extensions import Annotated
 with suppress(ImportError):
     from typing import Unpack
 

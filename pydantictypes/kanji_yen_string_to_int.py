@@ -12,8 +12,7 @@ from pydantictypes.utility import Utility
 try:
     from typing import Annotated
 except ImportError:
-    # Reason: Maybe mypy's bug
-    from typing_extensions import Annotated  # type: ignore[assignment]
+    from typing_extensions import Annotated
 
 __all__ = [
     "StrictKanjiYenStringToInt",
