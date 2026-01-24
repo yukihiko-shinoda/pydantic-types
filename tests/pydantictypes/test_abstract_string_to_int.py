@@ -19,6 +19,9 @@ from pydantictypes.abstract_string_to_int import ConstrainedInt
 from pydantictypes.abstract_string_to_int import ConstrainedStringToInt
 from pydantictypes.abstract_string_to_int import IntegerMustBeFromStr
 from pydantictypes.abstract_string_to_int import constringtoint
+from tests.testlibraries.type_validation import ConstrainedIntAsserter
+from tests.testlibraries.type_validation import ConstraintIntParams
+from tests.testlibraries.type_validation import ConstraintValueAsserter
 
 if TYPE_CHECKING:
     from typing import Type
@@ -129,28 +132,9 @@ class TestConstrainedInt:
 
     def _assert_default_constrained_int_attributes(self) -> None:
         """Assert ConstrainedInt has correct default attribute values."""
-        self._assert_strict_is_false(ConstrainedInt)
-        self._assert_constraint_attributes_are_none(ConstrainedInt)
-
-    def _assert_strict_is_false(self, cls: Any) -> None:  # noqa: ANN401
-        """Assert class strict attribute is False."""
-        assert cls.strict is False
-
-    def _assert_constraint_attributes_are_none(self, cls: Any) -> None:  # noqa: ANN401
-        """Assert class constraint attributes are None."""
-        self._assert_size_constraints_are_none(cls)
-        self._assert_multiple_constraint_is_none(cls)
-
-    def _assert_size_constraints_are_none(self, cls: Any) -> None:  # noqa: ANN401
-        """Assert class size constraint attributes are None."""
-        assert cls.gt is None
-        assert cls.ge is None
-        assert cls.lt is None
-        assert cls.le is None
-
-    def _assert_multiple_constraint_is_none(self, cls: Any) -> None:  # noqa: ANN401
-        """Assert class multiple_of constraint attribute is None."""
-        assert cls.multiple_of is None
+        asserter = ConstrainedIntAsserter(ConstrainedInt)
+        asserter.assert_strict_is_false()
+        asserter.assert_constraint_attributes_are_none()
 
     @pytest.mark.parametrize(
         ("value", "expected"),
@@ -162,6 +146,7 @@ class TestConstrainedInt:
             (False, 0),
         ],
     )
+    # Reason: Need Any to test various invalid types in parametrized test
     def test_validate_with_non_strict_mode(self, value: Any, expected: int) -> None:  # noqa: ANN401
         """Test validate method in non-strict mode."""
         # Create a temporary class with no constraints
@@ -440,9 +425,9 @@ class TestConstrainedStringToInt:
             ({}, "string required"),
         ],
     )
-    # Reason: Need Any to test various non-string types
     def test_integer_must_be_from_str_with_non_string_raises_error(
         self,
+        # Reason: Need Any to test various non-string types
         non_string_value: Any,  # noqa: ANN401
         expected_message: str,
     ) -> None:
@@ -530,27 +515,19 @@ class TestConstringtointFunction:
 
     def _assert_type_has_default_attributes(self, result_type: type) -> None:
         """Assert type has default constraint attribute values."""
-        self._assert_strict_is_false(result_type)
-        self._assert_constraint_attributes_are_none(result_type)
+        asserter = ConstrainedIntAsserter(result_type)
+        asserter.assert_strict_is_false()
+        asserter.assert_constraint_attributes_are_none()
 
     @pytest.mark.parametrize(
-        ("strict", "gt", "ge", "lt", "le", "multiple_of"),
+        "params",
         [
-            (True, 1, None, None, 99, 5),
-            (False, None, 1, 50, None, 10),
-            (True, None, None, None, None, None),
+            ConstraintIntParams(strict=True, gt=1, le=99, multiple_of=5),
+            ConstraintIntParams(strict=False, ge=1, lt=50, multiple_of=10),
+            ConstraintIntParams(strict=True),
         ],
     )
-    # Reason: Need bool parameter  # pylint: disable-next=too-many-arguments,too-many-positional-arguments
-    def test_creates_type_with_all_parameters(  # noqa: PLR0913
-        self,
-        strict: bool,  # noqa: FBT001
-        gt: int | None,
-        ge: int | None,
-        lt: int | None,
-        le: int | None,
-        multiple_of: int | None,
-    ) -> None:
+    def test_creates_type_with_all_parameters(self, params: ConstraintIntParams) -> None:
         """Test that constringtoint creates a type with all parameters set."""
 
         # Create a concrete base class for testing
@@ -562,56 +539,16 @@ class TestConstringtointFunction:
         result_type = constringtoint(  # pylint: disable=duplicate-code
             "ParameterizedType",
             TestStringToInt,
-            strict=strict,
-            gt=gt,
-            ge=ge,
-            lt=lt,
-            le=le,
-            multiple_of=multiple_of,
+            strict=params.strict,
+            gt=params.gt,
+            ge=params.ge,
+            lt=params.lt,
+            le=params.le,
+            multiple_of=params.multiple_of,
         )
 
         self._assert_type_inheritance_and_name(result_type, TestStringToInt, "ParameterizedType")
-        self._assert_type_has_specific_attributes(result_type, strict, gt, ge, lt, le, multiple_of)
-
-    # Reason: Need all constraint parameters  # pylint: disable-next=too-many-arguments,too-many-positional-arguments
-    def _assert_type_has_specific_attributes(  # noqa: PLR0913
-        self,
-        result_type: type,
-        strict: bool,  # noqa: FBT001
-        gt: int | None,
-        ge: int | None,
-        lt: int | None,
-        le: int | None,
-        multiple_of: int | None,
-    ) -> None:
-        """Assert type has specific constraint attribute values."""
-        self._assert_strict_attribute_value(result_type, strict)
-        self._assert_size_constraint_values(result_type, gt, ge, lt, le)
-        self._assert_multiple_constraint_value(result_type, multiple_of)
-
-    def _assert_strict_attribute_value(self, result_type: Any, expected_strict: bool) -> None:  # noqa: FBT001, ANN401
-        """Assert type strict attribute has expected value."""
-        assert result_type.strict == expected_strict
-
-    # pylint: disable-next=too-many-arguments,too-many-positional-arguments
-    def _assert_size_constraint_values(
-        self,
-        result_type: Any,  # noqa: ANN401
-        expected_gt: int | None,
-        expected_ge: int | None,
-        expected_lt: int | None,
-        expected_le: int | None,
-    ) -> None:
-        """Assert type size constraint attributes have expected values."""
-        assert result_type.gt == expected_gt
-        assert result_type.ge == expected_ge
-        assert result_type.lt == expected_lt
-        assert result_type.le == expected_le
-
-    # pylint: disable-next=line-too-long
-    def _assert_multiple_constraint_value(self, result_type: Any, expected_multiple_of: int | None) -> None:  # noqa: ANN401
-        """Assert type multiple_of attribute has expected value."""
-        assert result_type.multiple_of == expected_multiple_of
+        ConstraintValueAsserter(result_type, params).assert_all()
 
     def test_created_type_functionality(self) -> None:
         """Test that the created type functions correctly."""
@@ -644,26 +581,6 @@ class TestConstringtointFunction:
 
         with pytest.raises(NumberNotMultipleError):
             cast("Type[ConstrainedStringToInt]", comma_string_to_int).validate("7")  # pylint: disable=no-member
-
-    def _assert_strict_is_false(self, cls: Any) -> None:  # noqa: ANN401
-        """Assert class strict attribute is False."""
-        assert cls.strict is False
-
-    def _assert_constraint_attributes_are_none(self, cls: Any) -> None:  # noqa: ANN401
-        """Assert class constraint attributes are None."""
-        self._assert_size_constraints_are_none(cls)
-        self._assert_multiple_constraint_is_none(cls)
-
-    def _assert_size_constraints_are_none(self, cls: Any) -> None:  # noqa: ANN401
-        """Assert class size constraint attributes are None."""
-        assert cls.gt is None
-        assert cls.ge is None
-        assert cls.lt is None
-        assert cls.le is None
-
-    def _assert_multiple_constraint_is_none(self, cls: Any) -> None:  # noqa: ANN401
-        """Assert class multiple_of constraint attribute is None."""
-        assert cls.multiple_of is None
 
 
 class TestModuleIntegration:

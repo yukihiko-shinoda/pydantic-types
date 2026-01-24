@@ -31,12 +31,12 @@ class IntegerMustBeFromStr:
     def __init__(self, string_to_int: Callable[[str], int]) -> None:
         self.string_to_int = string_to_int
 
-    # Reason: This Any is correct
+    # Reason: The argument of pydantic type
     def validate(self, value: Any) -> int:  # noqa: ANN401
         self.raise_if_not_str(value)
         return self.string_to_int(value)
 
-    # Reason: This Any is correct
+    # Reason: The argument of pydantic type
     def raise_if_not_str(self, value: Any) -> None:  # noqa: ANN401
         if not isinstance(value, str):
             msg = f"String required. Value is {value}. Type is {type(value)}."
@@ -54,7 +54,8 @@ class ConstrainedInt(int, metaclass=ConstrainedNumberMeta):
     multiple_of: OptionalInt = None
 
     @classmethod
-    # Reason: To follow Pydantic specification. pylint: disable-next=line-too-long
+    # Reason: To follow Pydantic specification.
+    # Reason: The argument of pydantic type pylint: disable-next=line-too-long
     def __get_pydantic_core_schema__(cls, _source_type: Any, handler: GetCoreSchemaHandler) -> CoreSchema:  # noqa: ANN401
         return no_info_after_validator_function(cls.validate, handler.generate_schema(str))
 
@@ -70,7 +71,7 @@ class ConstrainedInt(int, metaclass=ConstrainedNumberMeta):
         )
 
     @classmethod
-    # Reason: This Any is correct
+    # Reason: The argument of pydantic type
     def validate(cls, value: Any) -> Number:  # noqa: ANN401
         value = strict_int_validator(value) if cls.strict else int_validator(value)
         value = cls.number_size_validator(value)
@@ -111,13 +112,13 @@ class ConstrainedStringToInt(ConstrainedInt):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     @classmethod
-    # Reason: This Any is correct
+    # Reason: The argument of pydantic type
     def validate(cls, value: Any) -> Number:  # noqa: ANN401
         value = cls.integer_must_be_from_str(value)
         return super().validate(value)
 
     @classmethod
-    # Reason: This Any is correct
+    # Reason: The argument of pydantic type
     def integer_must_be_from_str(cls, value: Any) -> int:  # noqa: ANN401
         if not isinstance(value, str):
             msg = "string required"

@@ -22,7 +22,7 @@ class OptionalIntegerMustBeFromStr:
     def __init__(self, string_to_int: Callable[[str], int]) -> None:
         self.string_to_int = string_to_int
 
-    # Reason: This Any is correct
+    # Reason: The argument of pydantic type
     def validate(self, value: Any) -> int | None:  # noqa: ANN401
         if not isinstance(value, str):
             msg = f"String required. Value is {value}. Type is {type(value)}."

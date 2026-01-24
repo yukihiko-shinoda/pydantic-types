@@ -69,7 +69,7 @@ class Test:  # pylint: disable=duplicate-code
             1,
         ],
     )
-    # Reason: This Any is correct
+    # Reason: Need Any to test various invalid types in parametrized test
     def test_error(self, value: Any) -> None:  # noqa: ANN401
         """Pydantic should raise ValidationError."""
         with pytest.raises((ValidationError, TypeError)):

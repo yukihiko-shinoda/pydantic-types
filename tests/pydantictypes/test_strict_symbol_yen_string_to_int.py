@@ -67,6 +67,7 @@ class TestStrictSymbolYenStringToInt:
             r"abc",  # No backslash, no numbers
         ],
     )
+    # Reason: Need Any to test various invalid types in parametrized test
     def test_invalid_conversion(self, value: Any) -> None:  # noqa: ANN401
         """Pydantic should raise ValidationError for invalid values."""
         with pytest.raises((ValidationError, TypeError)):

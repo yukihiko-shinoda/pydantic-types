@@ -13,9 +13,9 @@ import pytest
 from pydantictypes.abstract_string_to_optional_int import OptionalIntegerMustBeFromStr
 from pydantictypes.abstract_string_to_optional_int import abstract_constringtooptionalint
 from pydantictypes.validators import optional_int_validator
-from pydantictypes.validators import optional_number_multiple_validator
-from pydantictypes.validators import optional_number_size_validator
 from pydantictypes.validators import optional_strict_int_validator
+from tests.testlibraries.type_validation import OptionalIntConstraintListAsserter
+from tests.testlibraries.type_validation import OptionalIntConstraintListParams
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -158,23 +158,22 @@ class TestAbstractConstringtooptionalint:
     """Tests for abstract_constringtooptionalint function."""
 
     @pytest.mark.parametrize(
-        ("expected_length", "expected_validator", "expected_none_constraint"),
+        ("expected_length", "expected_validator"),
         [
-            (5, optional_int_validator, None),
+            (5, optional_int_validator),
         ],
     )
     def test_default_parameters_returns_expected_validators(
         self,
         expected_length: int,
         expected_validator: Callable[..., Any],
-        expected_none_constraint: None,
     ) -> None:
         """Test that default parameters return the expected validator list."""
         result = abstract_constringtooptionalint()
 
-        self._assert_default_length(result, expected_length)
-        self._assert_default_validators(result, expected_validator)
-        self._assert_default_interval_and_constraint(result, expected_none_constraint)
+        params = OptionalIntConstraintListParams()
+        asserter = OptionalIntConstraintListAsserter(result, params)
+        asserter.assert_default_structure(expected_length, expected_validator)
 
     @pytest.mark.parametrize(
         ("strict", "expected_validator"),
@@ -216,9 +215,9 @@ class TestAbstractConstringtooptionalint:
         """Test that interval constraints create the correct Interval object."""
         result = abstract_constringtooptionalint(gt=gt, ge=ge, lt=lt, le=le)
 
-        interval = result[3]
-        self._assert_interval_type(interval)
-        self._assert_interval_values(interval, gt, ge, lt, le)
+        params = OptionalIntConstraintListParams(gt=gt, ge=ge, lt=lt, le=le)
+        asserter = OptionalIntConstraintListAsserter(result, params)
+        asserter.assert_interval_constraints()
 
     @pytest.mark.parametrize(
         ("multiple_of", "expected_result"),
@@ -272,69 +271,18 @@ class TestAbstractConstringtooptionalint:
             multiple_of=multiple_of,
         )
 
-        self._assert_basic_structure(result, strict, expected_length)
-        self._assert_interval_constraints(result, gt, ge, lt, le)
-        self._assert_multiple_constraint(result, multiple_of)
-
-    def _assert_result_length(self, result: list[Any], expected_length: int) -> None:
-        """Assert result list length."""
-        assert len(result) == expected_length
-
-    def _assert_validator_type(self, result: list[Any], strict: bool) -> None:  # noqa: FBT001
-        """Assert first validator type based on strict parameter."""
-        expected_validator = optional_strict_int_validator if strict else optional_int_validator
-        assert result[0] is expected_validator
-
-    def _assert_size_and_multiple_validators(self, result: list[Any]) -> None:
-        """Assert size and multiple validators."""
-        assert result[1] is optional_number_size_validator
-        assert result[2] is optional_number_multiple_validator
-
-    def _assert_basic_structure(self, result: list[Any], strict: bool, expected_length: int) -> None:  # noqa: FBT001
-        """Assert basic structure and validator types."""
-        self._assert_result_length(result, expected_length)
-        self._assert_validator_type(result, strict)
-        self._assert_size_and_multiple_validators(result)
-
-    def _assert_interval_type(self, interval: annotated_types.Interval) -> None:
-        """Assert interval is correct type."""
-        assert isinstance(interval, annotated_types.Interval)
-
-    # Reason: Need all interval constraint parameters  # pylint: disable-next=too-many-arguments,too-many-positional-arguments
-    def _assert_interval_values(
-        self,
-        interval: annotated_types.Interval,
-        gt: int | None,
-        ge: int | None,
-        lt: int | None,
-        le: int | None,
-    ) -> None:
-        """Assert interval constraint values."""
-        assert interval.gt == gt
-        assert interval.ge == ge
-        assert interval.lt == lt
-        assert interval.le == le
-
-    # Reason: Need all interval constraint parameters  # pylint: disable-next=too-many-arguments,too-many-positional-arguments
-    def _assert_interval_constraints(self, result: list[Any], gt: int, ge: int, lt: int, le: int) -> None:
-        """Assert interval constraint values."""
-        interval = result[3]
-        self._assert_interval_type(interval)
-        self._assert_interval_values(interval, gt, ge, lt, le)
-
-    def _assert_multiple_type(self, multiple_constraint: annotated_types.MultipleOf) -> None:
-        """Assert multiple constraint is correct type."""
-        assert isinstance(multiple_constraint, annotated_types.MultipleOf)
-
-    def _assert_multiple_value(self, multiple_constraint: annotated_types.MultipleOf, multiple_of: int) -> None:
-        """Assert multiple constraint value."""
-        assert multiple_constraint.multiple_of == multiple_of
-
-    def _assert_multiple_constraint(self, result: list[Any], multiple_of: int) -> None:
-        """Assert multiple_of constraint value."""
-        multiple_constraint = result[4]
-        self._assert_multiple_type(multiple_constraint)
-        self._assert_multiple_value(multiple_constraint, multiple_of)
+        params = OptionalIntConstraintListParams(
+            strict=strict,
+            gt=gt,
+            ge=ge,
+            lt=lt,
+            le=le,
+            multiple_of=multiple_of,
+        )
+        asserter = OptionalIntConstraintListAsserter(result, params)
+        asserter.assert_basic_structure(expected_length)
+        asserter.assert_interval_constraints()
+        asserter.assert_multiple_constraint()
 
     @pytest.mark.parametrize(
         ("expected_type", "expected_length"),
@@ -372,42 +320,12 @@ class TestAbstractConstringtooptionalint:
         kwargs: dict[str, Any] = {constraint_name: constraint_value}
         result = abstract_constringtooptionalint(**kwargs)
 
+        params = OptionalIntConstraintListParams(**kwargs)
+        asserter = OptionalIntConstraintListAsserter(result, params)
         if constraint_name == "multiple_of":
-            self._assert_individual_multiple_constraint(result, constraint_value)
+            asserter.assert_individual_multiple_constraint(constraint_value)
         else:
-            self._assert_individual_interval_constraint(result, constraint_name, constraint_value)
-
-    def _assert_default_length(self, result: list[Any], expected_length: int) -> None:
-        """Assert default result length."""
-        assert len(result) == expected_length
-
-    def _assert_default_validators(self, result: list[Any], expected_validator: Callable[..., Any]) -> None:
-        """Assert default validator types."""
-        assert result[0] is expected_validator
-        assert result[1] is optional_number_size_validator
-        assert result[2] is optional_number_multiple_validator
-
-    def _assert_default_interval_and_constraint(self, result: list[Any], expected_none_constraint: None) -> None:
-        """Assert default interval and constraint."""
-        assert isinstance(result[3], annotated_types.Interval)
-        assert result[4] is expected_none_constraint
-
-    def _assert_individual_multiple_constraint(self, result: list[Any], constraint_value: int) -> None:
-        """Assert individual multiple constraint."""
-        multiple_constraint = result[4]
-        assert isinstance(multiple_constraint, annotated_types.MultipleOf)
-        assert multiple_constraint.multiple_of == constraint_value
-
-    def _assert_individual_interval_constraint(
-        self,
-        result: list[Any],
-        constraint_name: str,
-        constraint_value: int,
-    ) -> None:
-        """Assert individual interval constraint."""
-        interval = result[3]
-        assert isinstance(interval, annotated_types.Interval)
-        assert getattr(interval, constraint_name) == constraint_value
+            asserter.assert_individual_interval_constraint(constraint_name, constraint_value)
 
 
 class TestAbstractModuleIntegration:

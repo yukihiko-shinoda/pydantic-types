@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 V = TypeVar("V")
 
 
-def create(target_class: type[V], values: list[str]) -> V:
+def create(target_class: type[V], values: list[Any]) -> V:
     return target_class(*values)
 
 
@@ -55,9 +55,9 @@ class BaseTestConstraintFunction(ABC):
         """Return expected metadata count."""
         return 3  # Default: BeforeValidator, Interval, MultipleOf
 
-    # Any is needed here because subclasses return different types:
-    # - Regular int types return `int`
-    # - Optional int types return `Optional[int]` (which is a special form)
+    # Reason: Cannot use `type` as return annotation because subclasses return different things:
+    # - Regular int types return `int` (which is a type object)
+    # - Optional int types return `Optional[int]` (typing special form, not a type object)
     def get_expected_origin(self) -> Any:  # noqa: ANN401
         """Return expected __origin__ type."""
         return int

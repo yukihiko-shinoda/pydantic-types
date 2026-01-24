@@ -15,10 +15,12 @@ if TYPE_CHECKING:
 class MockTypingModule(ModuleType):
     """Mock typing module that raises ImportError for specific attributes."""
 
+    # Reason: Need Any to accept any module type for mocking
     def __init__(self, original_typing: Any, blocked_attrs: list[str]) -> None:  # noqa: ANN401
         self._original_typing = original_typing
         self._blocked_attrs = blocked_attrs
 
+    # Reason: Need Any to return any attribute type from the original module
     def __getattr__(self, name: str) -> Any:  # noqa: ANN401
         if name in self._blocked_attrs:
             msg = f"cannot import name '{name}' from 'typing'"
