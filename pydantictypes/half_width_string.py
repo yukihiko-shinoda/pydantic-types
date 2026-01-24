@@ -43,7 +43,7 @@ def _check_half_width_characters(value: str) -> None:
 class HalfWidthValidator:
     """Validator to check that string contains only half-width characters."""
 
-    # Reason: This Any is correct
+    # Reason: The argument of pydantic type
     def validate(self, value: Any) -> str:  # noqa: ANN401
         """Validate that string contains only half-width characters.
 
@@ -69,7 +69,7 @@ class HalfWidthValidator:
 class OptionalHalfWidthValidator:
     """Validator to check that optional string contains only half-width characters."""
 
-    # Reason: This Any is correct
+    # Reason: The argument of pydantic type
     def validate(self, value: Any) -> str | None:  # noqa: ANN401
         """Validate that optional string contains only half-width characters.
 

@@ -65,7 +65,7 @@ class Test:
             1,
         ],
     )
-    # Reason: This Any is correct
+    # Reason: Need Any to test various invalid types in parametrized test
     def test_error(self, value: Any) -> None:  # noqa: ANN401
         """Property should be converted to int."""
         with pytest.raises((ValidationError, TypeError)):

@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 
+# Reason: The argument of pydantic type
 def validate_optional_string_type(value: Any) -> str | None:  # noqa: ANN401
     """Validate and normalize optional string values.
 

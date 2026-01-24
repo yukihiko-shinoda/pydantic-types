@@ -58,7 +58,7 @@ class TestStringSlashToDateTime:
             1,
         ],
     )
-    # Reason: This Any is correct
+    # Reason: Need Any to test various invalid types in parametrized test
     def test_error(self, value: Any) -> None:  # noqa: ANN401
         """Pydantic should raise ValidationError."""
         with pytest.raises(ValidationError):
@@ -74,7 +74,7 @@ class TestStringSlashToDateTime:
             datetime.date(2020, 1, 1),
         ],
     )
-    # Reason: This Any is correct
+    # Reason: Need Any to test various invalid types in parametrized test
     def test_datetime_must_be_from_str_direct(self, value: Any) -> None:  # noqa: ANN401
         """Test direct call to datetime_must_be_from_str with non-string."""
         with pytest.raises(TypeError, match="string required"):
@@ -126,7 +126,7 @@ class TestStringNumberOnlyToDateTime:
             1,
         ],
     )
-    # Reason: This Any is correct
+    # Reason: Need Any to test various invalid types in parametrized test
     def test_error(self, value: Any) -> None:  # noqa: ANN401
         """Pydantic should raise ValidationError."""
         with pytest.raises(ValidationError):
@@ -179,7 +179,7 @@ class TestStringSlashMonthDayOnlyToDatetime:
             1,
         ],
     )
-    # Reason: This Any is correct
+    # Reason: Need Any to test various invalid types in parametrized test
     def test_error(self, value: Any) -> None:  # noqa: ANN401
         """Pydantic should raise ValidationError."""
         with pytest.raises(ValidationError):
@@ -195,7 +195,7 @@ class TestStringSlashMonthDayOnlyToDatetime:
             datetime.date(2020, 1, 1),
         ],
     )
-    # Reason: This Any is correct
+    # Reason: Need Any to test various invalid types in parametrized test
     def test_parse_date_direct(self, value: Any) -> None:  # noqa: ANN401
         """Test direct call to parse_date with non-string."""
         with pytest.raises(TypeError, match="string required"):

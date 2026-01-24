@@ -107,7 +107,7 @@ class StringLengthValidator:
         self.max_length = max_length
         self.equal_to = equal_to
 
-    # Reason: This Any is correct
+    # Reason: The argument of pydantic type
     def validate(self, value: Any) -> str:  # noqa: ANN401
         """Validate string length."""
         if not isinstance(value, str):
@@ -138,7 +138,7 @@ class OptionalStringLengthValidator:
         self.max_length = max_length
         self.equal_to = equal_to
 
-    # Reason: This Any is correct
+    # Reason: The argument of pydantic type
     def validate(self, value: Any) -> str | None:  # noqa: ANN401
         """Validate optional string length."""
         validated = validate_optional_string_type(value)

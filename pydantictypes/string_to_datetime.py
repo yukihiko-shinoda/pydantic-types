@@ -23,13 +23,13 @@ class StringToDateTime(datetime):
         return no_info_after_validator_function(cls.validate, handler.generate_schema(str))
 
     @classmethod
-    # Reason: This Any is correct
+    # Reason: The argument of pydantic type
     def validate(cls, value: Any) -> datetime:  # noqa: ANN401
         value = cls.datetime_must_be_from_str(value)
         return cls.parse_date(value)
 
     @classmethod
-    # Reason: This Any is correct
+    # Reason: The argument of pydantic type
     def datetime_must_be_from_str(cls, value: Any) -> str:  # noqa: ANN401
         if not isinstance(value, str):
             msg = "string required"
@@ -37,7 +37,7 @@ class StringToDateTime(datetime):
         return value
 
     @classmethod
-    # Reason: This Any is correct
+    # Reason: The argument of pydantic type
     def parse_date(cls, value: Any) -> datetime:  # noqa: ANN401
         # Reason: Time is not used in this process.
         return datetime.strptime(value, cls.get_format())  # noqa: DTZ007
@@ -60,7 +60,7 @@ class StringNumberOnlyToDateTime(StringToDateTime):
     """Type that converts string to datetime."""
 
     @classmethod
-    # Reason: This Any is correct
+    # Reason: The argument of pydantic type
     def validate(cls, value: Any) -> datetime:  # noqa: ANN401
         value = cls.datetime_must_be_from_str(value)
         value = cls.eight_digits_required(value)
@@ -83,7 +83,7 @@ class StringSlashMonthDayOnlyToDatetime(StringToDateTime):
     """Type that converts string to datetime."""
 
     @classmethod
-    # Reason: This Any is correct
+    # Reason: The argument of pydantic type
     def parse_date(cls, value: Any) -> datetime:  # noqa: ANN401
         if not isinstance(value, str):
             msg = "string required"

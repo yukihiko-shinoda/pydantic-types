@@ -20,14 +20,14 @@ if TYPE_CHECKING:
 Number = Union[int, float, Decimal]
 
 
-# Reason: This Any is correct
+# Reason: The argument of pydantic type
 def optional_strict_int_validator(value: Any) -> int | None:  # noqa: ANN401
     if value is None:
         return None
     return strict_int_validator(value)
 
 
-# Reason: This Any is correct
+# Reason: The argument of pydantic type
 def optional_int_validator(value: Any) -> int | None:  # noqa: ANN401
     if value is None:
         return None
@@ -46,7 +46,7 @@ def optional_number_multiple_validator(value: Number | None, field: ModelField) 
     return number_multiple_validator(value, field)
 
 
-# Reason: This Any is correct
+# Reason: The argument of pydantic type
 def string_validator(value: Any) -> str:  # noqa: ANN401
     if not isinstance(value, str):
         msg = "string required"
