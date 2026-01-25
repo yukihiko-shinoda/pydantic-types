@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import pytest
 from pydantic.dataclasses import dataclass
 from pydantic_core import ValidationError
@@ -9,7 +11,11 @@ from pydantic_core import ValidationError
 # Reason: These are used in dataclass field annotations which require runtime availability
 from pydantictypes.half_width_string import HalfWidthString  # noqa: TC001
 from pydantictypes.half_width_string import OptionalHalfWidthString  # noqa: TC001
+from tests.pydantictypes import BaseTestImportFallback
 from tests.pydantictypes import create
+
+if TYPE_CHECKING:
+    from types import ModuleType
 
 
 @dataclass
@@ -177,3 +183,18 @@ class TestEastAsianWidthCategories:
         # Note: The specific characters that are ambiguous depend on the Unicode version
         # We test the behavior exists even if specific examples may vary
         # Ambiguous characters behavior is tested indirectly
+
+
+class TestImportFallback(BaseTestImportFallback):
+    """Tests for import fallback scenarios."""
+
+    def get_module(self) -> ModuleType:
+        """Return the module to test for import fallback."""
+        # Reason: For testing import fallback behavior
+        from pydantictypes import half_width_string  # pylint: disable=import-outside-toplevel  # noqa: PLC0415
+
+        return half_width_string
+
+    def supports_unpack_fallback(self) -> bool:
+        """This module does not support Unpack fallback testing."""
+        return False
