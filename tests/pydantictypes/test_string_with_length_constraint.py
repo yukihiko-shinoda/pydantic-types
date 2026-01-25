@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import pytest
 from pydantic.dataclasses import dataclass
 from pydantic_core import ValidationError
@@ -11,7 +13,11 @@ from pydantictypes.string_with_length_constraint import ConstrainedOptionalStrin
 from pydantictypes.string_with_length_constraint import ConstrainedStringWithLength  # noqa: TC001
 from pydantictypes.string_with_length_constraint import constrained_optional_string  # noqa: TC001
 from pydantictypes.string_with_length_constraint import constrained_string  # noqa: TC001
+from tests.pydantictypes import BaseTestImportFallback
 from tests.pydantictypes import create
+
+if TYPE_CHECKING:
+    from types import ModuleType
 
 
 @dataclass
@@ -239,3 +245,18 @@ class TestConstrainedOptionalStringFunction:
 
         with pytest.raises(ValidationError):
             create(Stub, ["abcdef"])
+
+
+class TestImportFallback(BaseTestImportFallback):
+    """Tests for import fallback scenarios."""
+
+    def get_module(self) -> ModuleType:
+        """Return the module to test for import fallback."""
+        # Reason: For testing import fallback behavior
+        from pydantictypes import string_with_length_constraint  # pylint: disable=import-outside-toplevel  # noqa: PLC0415,I001
+
+        return string_with_length_constraint
+
+    def supports_unpack_fallback(self) -> bool:
+        """This module does not support Unpack fallback testing."""
+        return False
