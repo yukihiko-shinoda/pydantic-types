@@ -6,14 +6,11 @@ from contextlib import suppress
 from sys import version_info
 from typing import Optional
 
+import annotated_types
 from pydantic import BeforeValidator
 
 from pydantictypes.abstract_string_to_optional_int import OptionalIntegerMustBeFromStr
-from pydantictypes.abstract_string_to_optional_int import abstract_constringtooptionalint
 from pydantictypes.utility import Utility
-from pydantictypes.validators import optional_number_multiple_validator
-from pydantictypes.validators import optional_number_size_validator
-from pydantictypes.validators import optional_strict_int_validator
 
 # Reason: To use raw typing imports pylint: disable=duplicate-code
 try:
@@ -25,13 +22,16 @@ with suppress(ImportError):
 
 __all__ = [
     "StrictStringWithCommaToOptionalInt",
+    "constringwithcommatooptionalint",
 ]
 
 
-# Reason: Followed pydantic specification.
+# Reason: Constraint parameters follow Pydantic specification (gt, ge, lt, le, multiple_of)
 def constringwithcommatooptionalint(  # noqa: PLR0913 pylint: disable=too-many-arguments
     *,
-    strict: bool = False,
+    # Reason: Kept for backward compatibility but no longer used in Pydantic v2
+    strict: bool = False,  # noqa: ARG001  # pylint: disable=unused-argument
+    # Reason: Short parameter names follow Pydantic specification
     gt: int | None = None,  # pylint: disable=invalid-name
     ge: int | None = None,  # pylint: disable=invalid-name
     lt: int | None = None,  # pylint: disable=invalid-name
@@ -42,6 +42,7 @@ def constringwithcommatooptionalint(  # noqa: PLR0913 pylint: disable=too-many-a
 
     Args:
         strict: Whether to validate the integer in strict mode. Defaults to `None`.
+            Note: This parameter is kept for backward compatibility but is no longer used.
         gt: The value must be greater than this.
         ge: The value must be greater than or equal to this.
         lt: The value must be less than this.
@@ -51,8 +52,23 @@ def constringwithcommatooptionalint(  # noqa: PLR0913 pylint: disable=too-many-a
     Returns:
         The wrapped integer type.
     """
-    constraints = abstract_constringtooptionalint(strict=strict, gt=gt, ge=ge, lt=lt, le=le, multiple_of=multiple_of)
-    before_validator = BeforeValidator(OptionalIntegerMustBeFromStr(Utility.convert_string_with_comma_to_int).validate)
+    # Create validator with constraints - constraints are validated in the validator itself
+    validator = OptionalIntegerMustBeFromStr(
+        Utility.convert_string_with_comma_to_int,
+        gt=gt,
+        ge=ge,
+        lt=lt,
+        le=le,
+        multiple_of=multiple_of,
+    )
+    before_validator = BeforeValidator(validator.validate)
+
+    # Build constraint metadata for schema/documentation purposes
+    constraints = [
+        annotated_types.Interval(gt=gt, ge=ge, lt=lt, le=le),
+        annotated_types.MultipleOf(multiple_of) if multiple_of is not None else None,
+    ]
+
     # Reason: Following block is tested in different workflows in GitHub Actions
     if version_info < (3, 11):  # pragma: no cover
         # Filter out None values
@@ -63,10 +79,8 @@ def constringwithcommatooptionalint(  # noqa: PLR0913 pylint: disable=too-many-a
     return Annotated[Optional[int], before_validator, Unpack[constraints]]  # type: ignore[return-value]
 
 
+# Basic type without constraints (for simple string with comma to optional int conversion)
 StrictStringWithCommaToOptionalInt = Annotated[
     Optional[int],
     BeforeValidator(OptionalIntegerMustBeFromStr(Utility.convert_string_with_comma_to_int).validate),
-    optional_strict_int_validator,
-    optional_number_size_validator,
-    optional_number_multiple_validator,
 ]
