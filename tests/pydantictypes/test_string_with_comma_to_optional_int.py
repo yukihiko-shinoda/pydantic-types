@@ -83,8 +83,8 @@ class TestConstraintFunction(BaseTestConstraintFunction):
 
     def get_expected_metadata_count(self) -> int:
         """Return expected metadata count for optional int types."""
-        # BeforeValidator + Interval constraint (MultipleOf is None when not specified)
-        return 2
+        # Only BeforeValidator (no annotated_types metadata to avoid double-validation)
+        return 1
 
     # Any is needed here to match the base class signature and handle Optional[int]
     def get_expected_origin(self) -> Any:  # noqa: ANN401
@@ -107,5 +107,5 @@ class TestImportFallback(BaseTestImportFallback):
         return string_with_comma_to_optional_int
 
     def supports_unpack_fallback(self) -> bool:
-        """This module supports Unpack fallback testing."""
-        return True
+        """This module no longer uses Unpack (removed for Python 3.10 compatibility)."""
+        return False
