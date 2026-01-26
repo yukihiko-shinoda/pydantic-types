@@ -12,7 +12,7 @@ from pydantictypes.string_with_comma_to_optional_int import *  # noqa: F403
 from pydantictypes.string_with_length_constraint import *  # noqa: F403
 from pydantictypes.symbol_yen_string_to_int import *  # noqa: F403
 
-__version__ = "1.2.0"
+__version__ = "1.2.1"
 
 __all__ = []
 __all__ += empty_string_to_none.__all__  # type:ignore[name-defined] # noqa: F405 pylint: disable=undefined-variable
