@@ -3,18 +3,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
 from typing import Any
 
 import annotated_types
-
-from pydantictypes.validators import optional_int_validator
-from pydantictypes.validators import optional_number_multiple_validator
-from pydantictypes.validators import optional_number_size_validator
-from pydantictypes.validators import optional_strict_int_validator
-
-if TYPE_CHECKING:
-    from collections.abc import Callable
 
 
 @dataclass
@@ -110,7 +101,15 @@ class OptionalIntConstraintListParams:
 
 
 class OptionalIntConstraintListAsserter:
-    """Helper class to assert constraint list from abstract_constringtooptionalint()."""
+    """Helper class to assert constraint list from abstract_constringtooptionalint().
+
+    Note: The constraint list structure changed - it now only returns:
+    - result[0] = annotated_types.Interval
+    - result[1] = annotated_types.MultipleOf or None
+
+    Validators are no longer in the list; constraints are validated directly in the
+    OptionalIntegerMustBeFromStr class.
+    """
 
     def __init__(self, result: list[Any], params: OptionalIntConstraintListParams) -> None:
         """Initialize with result list and expected constraint values.
@@ -126,24 +125,14 @@ class OptionalIntConstraintListAsserter:
         """Assert result list length."""
         assert len(self.result) == expected_length
 
-    def assert_validator_type(self, strict: bool) -> None:  # noqa: FBT001
-        """Assert first validator type based on strict parameter."""
-        expected_validator = optional_strict_int_validator if strict else optional_int_validator
-        assert self.result[0] is expected_validator
-
-    def assert_size_and_multiple_validators(self) -> None:
-        """Assert size and multiple validators."""
-        assert self.result[1] is optional_number_size_validator
-        assert self.result[2] is optional_number_multiple_validator
-
     def assert_interval_type(self) -> None:
         """Assert interval is correct type."""
-        interval = self.result[3]
+        interval = self.result[0]
         assert isinstance(interval, annotated_types.Interval)
 
     def assert_interval_values(self) -> None:
         """Assert interval constraint values using stored expected values."""
-        interval = self.result[3]
+        interval = self.result[0]
         assert interval.gt == self.params.gt
         assert interval.ge == self.params.ge
         assert interval.lt == self.params.lt
@@ -156,12 +145,12 @@ class OptionalIntConstraintListAsserter:
 
     def assert_multiple_type(self) -> None:
         """Assert multiple constraint is correct type."""
-        multiple_constraint = self.result[4]
+        multiple_constraint = self.result[1]
         assert isinstance(multiple_constraint, annotated_types.MultipleOf)
 
     def assert_multiple_value(self) -> None:
         """Assert multiple constraint value using stored expected value."""
-        multiple_constraint = self.result[4]
+        multiple_constraint = self.result[1]
         assert multiple_constraint.multiple_of == self.params.multiple_of
 
     def assert_multiple_constraint(self) -> None:
@@ -170,37 +159,28 @@ class OptionalIntConstraintListAsserter:
         self.assert_multiple_value()
 
     def assert_basic_structure(self, expected_length: int) -> None:
-        """Assert basic structure and validator types."""
+        """Assert basic structure."""
         self.assert_result_length(expected_length)
-        if self.params.strict is not None:
-            self.assert_validator_type(self.params.strict)
-        self.assert_size_and_multiple_validators()
+        self.assert_interval_type()
 
-    def assert_default_structure(self, expected_length: int, expected_validator: Callable[..., Any]) -> None:
+    def assert_default_structure(self, expected_length: int) -> None:
         """Assert default structure."""
         self.assert_result_length(expected_length)
-        self._assert_default_validators(expected_validator)
         self._assert_default_interval_and_constraint()
-
-    def _assert_default_validators(self, expected_validator: Callable[..., Any]) -> None:
-        """Assert default validator types."""
-        assert self.result[0] is expected_validator
-        assert self.result[1] is optional_number_size_validator
-        assert self.result[2] is optional_number_multiple_validator
 
     def _assert_default_interval_and_constraint(self) -> None:
         """Assert default interval and constraint."""
-        assert isinstance(self.result[3], annotated_types.Interval)
-        assert self.result[4] is None
+        assert isinstance(self.result[0], annotated_types.Interval)
+        assert self.result[1] is None
 
     def assert_individual_multiple_constraint(self, constraint_value: int) -> None:
         """Assert individual multiple constraint."""
-        multiple_constraint = self.result[4]
+        multiple_constraint = self.result[1]
         assert isinstance(multiple_constraint, annotated_types.MultipleOf)
         assert multiple_constraint.multiple_of == constraint_value
 
     def assert_individual_interval_constraint(self, constraint_name: str, constraint_value: int) -> None:
         """Assert individual interval constraint."""
-        interval = self.result[3]
+        interval = self.result[0]
         assert isinstance(interval, annotated_types.Interval)
         assert getattr(interval, constraint_name) == constraint_value

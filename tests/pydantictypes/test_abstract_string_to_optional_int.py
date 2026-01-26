@@ -3,7 +3,6 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
 from typing import Any
 from unittest.mock import Mock
 
@@ -12,13 +11,8 @@ import pytest
 
 from pydantictypes.abstract_string_to_optional_int import OptionalIntegerMustBeFromStr
 from pydantictypes.abstract_string_to_optional_int import abstract_constringtooptionalint
-from pydantictypes.validators import optional_int_validator
-from pydantictypes.validators import optional_strict_int_validator
 from tests.testlibraries.type_validation import OptionalIntConstraintListAsserter
 from tests.testlibraries.type_validation import OptionalIntConstraintListParams
-
-if TYPE_CHECKING:
-    from collections.abc import Callable
 
 
 class TestOptionalIntegerMustBeFromStr:
@@ -82,7 +76,6 @@ class TestOptionalIntegerMustBeFromStr:
         [
             (123, "int"),
             (12.5, "float"),
-            (None, "NoneType"),
             ([], "list"),
             ({}, "dict"),
             (True, "bool"),
@@ -100,6 +93,16 @@ class TestOptionalIntegerMustBeFromStr:
         error_message = str(exc_info.value)
         assert f"String required. Value is {non_string_value}" in error_message
         assert f"Type is <class '{expected_type_name}'>" in error_message
+        mock_converter.assert_not_called()
+
+    def test_validate_with_none_returns_none(self) -> None:
+        """Test that validate returns None for None input (optional type)."""
+        mock_converter = Mock()
+        validator = OptionalIntegerMustBeFromStr(mock_converter)
+
+        result = validator.validate(None)
+
+        assert result is None
         mock_converter.assert_not_called()
 
     def test_validate_propagates_converter_exceptions(self) -> None:
@@ -155,44 +158,20 @@ class TestOptionalIntegerMustBeFromStr:
 
 
 class TestAbstractConstringtooptionalint:
-    """Tests for abstract_constringtooptionalint function."""
+    """Tests for abstract_constringtooptionalint function.
 
-    @pytest.mark.parametrize(
-        ("expected_length", "expected_validator"),
-        [
-            (5, optional_int_validator),
-        ],
-    )
-    def test_default_parameters_returns_expected_validators(
-        self,
-        expected_length: int,
-        expected_validator: Callable[..., Any],
-    ) -> None:
-        """Test that default parameters return the expected validator list."""
+    Note: The function now returns only constraint metadata (Interval, MultipleOf),
+    not validators. Validators are no longer in the list; constraints are validated
+    directly in the OptionalIntegerMustBeFromStr class.
+    """
+
+    def test_default_parameters_returns_expected_structure(self) -> None:
+        """Test that default parameters return the expected constraint list."""
         result = abstract_constringtooptionalint()
 
         params = OptionalIntConstraintListParams()
         asserter = OptionalIntConstraintListAsserter(result, params)
-        asserter.assert_default_structure(expected_length, expected_validator)
-
-    @pytest.mark.parametrize(
-        ("strict", "expected_validator"),
-        [
-            (True, optional_strict_int_validator),
-            (False, optional_int_validator),
-            (None, optional_int_validator),  # Default case
-        ],
-    )
-    def test_strict_parameter_selects_correct_validator(
-        self,
-        # pytest parametrize requires positional bool argument
-        strict: bool | None,  # noqa: FBT001
-        expected_validator: Callable[..., Any],
-    ) -> None:
-        """Test that strict parameter selects the correct int validator."""
-        result = abstract_constringtooptionalint(strict=strict)
-
-        assert result[0] is expected_validator
+        asserter.assert_default_structure(2)
 
     @pytest.mark.parametrize(
         ("gt", "ge", "lt", "le"),
@@ -236,7 +215,8 @@ class TestAbstractConstringtooptionalint:
         """Test that multiple_of parameter creates the correct constraint."""
         result = abstract_constringtooptionalint(multiple_of=multiple_of)
 
-        multiple_constraint = result[4]
+        # MultipleOf is now at index 1
+        multiple_constraint = result[1]
         if expected_result is None:
             assert multiple_constraint is None
         else:
@@ -244,16 +224,15 @@ class TestAbstractConstringtooptionalint:
             assert multiple_constraint.multiple_of == expected_result.multiple_of
 
     @pytest.mark.parametrize(
-        ("strict", "gt", "ge", "lt", "le", "multiple_of", "expected_length"),
+        ("gt", "ge", "lt", "le", "multiple_of", "expected_length"),
         [
-            (True, 1, 2, 100, 99, 5, 5),
-            (False, 0, 1, 50, 49, 10, 5),
+            (1, 2, 100, 99, 5, 2),
+            (0, 1, 50, 49, 10, 2),
         ],
     )
     # Reason: Parametrized argument  # pylint: disable-next=too-many-arguments,too-many-positional-arguments
     def test_all_parameters_together(  # noqa: PLR0913
         self,
-        strict: bool,  # noqa: FBT001
         gt: int,
         ge: int,
         lt: int,
@@ -263,7 +242,6 @@ class TestAbstractConstringtooptionalint:
     ) -> None:
         """Test function with all parameters set to ensure proper interaction."""
         result = abstract_constringtooptionalint(  # pylint: disable=duplicate-code
-            strict=strict,
             gt=gt,
             ge=ge,
             lt=lt,
@@ -272,7 +250,6 @@ class TestAbstractConstringtooptionalint:
         )
 
         params = OptionalIntConstraintListParams(
-            strict=strict,
             gt=gt,
             ge=ge,
             lt=lt,
@@ -284,26 +261,19 @@ class TestAbstractConstringtooptionalint:
         asserter.assert_interval_constraints()
         asserter.assert_multiple_constraint()
 
-    @pytest.mark.parametrize(
-        ("expected_type", "expected_length"),
-        [
-            (list, 5),
-        ],
-    )
-    def test_function_returns_list_type(self, expected_type: type, expected_length: int) -> None:
-        """Test that function returns a list."""
+    def test_function_returns_list_type(self) -> None:
+        """Test that function returns a list with 2 items."""
         result = abstract_constringtooptionalint()
-        assert isinstance(result, expected_type)
-        assert len(result) == expected_length
+        assert isinstance(result, list)
+        assert len(result) == 2  # noqa: PLR2004
 
     def test_function_with_keyword_only_parameters(self) -> None:
         """Test that function requires keyword-only parameters."""
         # This should work (keyword arguments)
         result = abstract_constringtooptionalint(strict=True, gt=5)
-        assert result[0] is optional_strict_int_validator
-
-        # Test that positional arguments would fail if attempted
-        # (This is enforced by the * in the function signature)
+        # Result[0] is now Interval, not a validator
+        assert isinstance(result[0], annotated_types.Interval)
+        assert result[0].gt == 5  # noqa: PLR2004
 
     @pytest.mark.parametrize(
         ("constraint_name", "constraint_value"),
@@ -328,45 +298,40 @@ class TestAbstractConstringtooptionalint:
             asserter.assert_individual_interval_constraint(constraint_name, constraint_value)
 
 
+def _simple_converter(value: str) -> int:
+    """Simple string-to-int converter for tests."""
+    return int(value)
+
+
 class TestAbstractModuleIntegration:
     """Integration tests for the abstract module components."""
 
     @pytest.mark.parametrize(
-        ("test_input", "expected_result", "expected_constraints_length"),
+        ("test_input", "expected_result"),
         [
-            ("25", 25, 5),
-            ("10", 10, 5),
+            ("25", 25),
+            ("10", 10),
         ],
     )
-    def test_validator_and_constraint_function_integration(
-        self,
-        test_input: str,
-        expected_result: int,
-        expected_constraints_length: int,
-    ) -> None:
-        """Test integration between OptionalIntegerMustBeFromStr and constraint function."""
-
-        # Create a simple string-to-int converter
-        def simple_converter(value: str) -> int:
-            return int(value)
-
-        # Create validator
-        validator = OptionalIntegerMustBeFromStr(simple_converter)
-
-        # Get constraints for strict validation
-        constraints = abstract_constringtooptionalint(strict=True, gt=0, multiple_of=5)
-
-        # Test that validator works with valid input
+    def test_validator_converts_valid_input(self, test_input: str, expected_result: int) -> None:
+        """Test that validator correctly converts valid string input."""
+        validator = OptionalIntegerMustBeFromStr(_simple_converter, gt=0, multiple_of=5)
         result = validator.validate(test_input)
         assert result == expected_result
 
-        # Test that validator works with empty string
+    def test_validator_returns_none_for_empty_string(self) -> None:
+        """Test that validator returns None for empty string input."""
+        validator = OptionalIntegerMustBeFromStr(_simple_converter, gt=0, multiple_of=5)
         result = validator.validate("")
         assert result is None
 
-        # Verify constraint structure is compatible
-        assert len(constraints) == expected_constraints_length
-        assert constraints[0] is optional_strict_int_validator
+    def test_constraint_function_returns_expected_structure(self) -> None:
+        """Test that constraint function returns expected metadata structure."""
+        constraints = abstract_constringtooptionalint(gt=0, multiple_of=5)
+        # Verify constraint structure - now only 2 items (Interval, MultipleOf)
+        assert len(constraints) == 2  # noqa: PLR2004
+        assert isinstance(constraints[0], annotated_types.Interval)
+        assert isinstance(constraints[1], annotated_types.MultipleOf)
 
     def test_module_exports_expected_components(self) -> None:
         """Test that the module exports the expected components."""

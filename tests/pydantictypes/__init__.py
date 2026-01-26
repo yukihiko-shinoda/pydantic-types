@@ -11,6 +11,7 @@ from typing import Callable
 from typing import TypeVar
 
 import pytest
+from pydantic_core import ValidationError
 
 if TYPE_CHECKING:
     from types import ModuleType
@@ -20,6 +21,26 @@ V = TypeVar("V")
 
 def create(target_class: type[V], values: list[Any]) -> V:
     return target_class(*values)
+
+
+class BaseTestOptionalType(ABC):
+    """Base class for testing optional type converters.
+
+    Subclasses must define a Stub dataclass as a class attribute.
+    """
+
+    Stub: type  # Subclasses must define this as a dataclass
+
+    def test_none_returns_none(self) -> None:
+        """Test that None input returns None for optional types."""
+        stub: Any = create(self.Stub, [None])
+        assert stub.int_ is None
+
+    # Reason: Test helper must accept Any type to test various invalid input types
+    def _assert_error_raised(self, value: Any) -> None:  # noqa: ANN401
+        """Assert that creating a Stub with the value raises ValidationError or TypeError."""
+        with pytest.raises((ValidationError, TypeError)):
+            create(self.Stub, [value])
 
 
 class BaseTestConstraintFunction(ABC):
