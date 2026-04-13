@@ -1,4 +1,4 @@
-FROM futureys/claude-code-python-development:20260221145500
+FROM futureys/claude-code-python-development:20260407212500
 COPY pyproject.toml uv.lock /workspace/
 # - Installation fails on Python 3.14 · Issue #327 · PyCQA/docformatter
 #   https://github.com/PyCQA/docformatter/issues/327
