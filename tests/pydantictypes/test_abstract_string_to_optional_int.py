@@ -1,4 +1,5 @@
 """Tests for abstract_string_to_optional_int.py."""
+
 # pylint: disable=duplicate-code
 
 from __future__ import annotations
@@ -366,13 +367,21 @@ class TestAbstractModuleIntegration:
 
         validator = OptionalIntegerMustBeFromStr(failing_converter)
 
-        if should_raise:
-            if exception_type is ValueError:
-                with pytest.raises(ValueError, match="Conversion failed"):
-                    validator.validate(test_input)
-            elif exception_type is TypeError:
-                with pytest.raises(TypeError, match="String required"):
-                    validator.validate(test_input)
-        else:
+        if not should_raise:
             result = validator.validate(test_input)
             assert result == expected_result
+        self.assert_raised_exception(validator, test_input, exception_type)
+
+    def assert_raised_exception(
+        self,
+        validator: OptionalIntegerMustBeFromStr,
+        test_input: str | int,
+        exception_type: type | None,
+    ) -> None:
+        """Helper method to assert that the correct exception is raised."""
+        if exception_type is ValueError:
+            with pytest.raises(ValueError, match="Conversion failed"):
+                validator.validate(test_input)
+        elif exception_type is TypeError:
+            with pytest.raises(TypeError, match="String required"):
+                validator.validate(test_input)

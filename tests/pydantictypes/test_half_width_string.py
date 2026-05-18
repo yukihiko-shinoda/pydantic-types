@@ -178,11 +178,13 @@ class TestEastAsianWidthCategories:
             create(StubHalfWidth, ["ＡＢＣ"])  # noqa: RUF001
 
     def test_ambiguous_characters_rejected(self) -> None:
-        """Test that ambiguous (A) characters are rejected."""
-        # Some symbols like '±' are ambiguous
-        # Note: The specific characters that are ambiguous depend on the Unicode version
-        # We test the behavior exists even if specific examples may vary
-        # Ambiguous characters behavior is tested indirectly
+        """Test that ambiguous (A) characters are rejected.
+
+        Some symbols like '±' are ambiguous
+        Note: The specific characters that are ambiguous depend on the Unicode version
+        We test the behavior exists even if specific examples may vary
+        Ambiguous characters behavior is tested indirectly
+        """
 
 
 class TestImportFallback(BaseTestImportFallback):

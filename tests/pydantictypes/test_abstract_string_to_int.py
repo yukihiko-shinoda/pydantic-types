@@ -1,4 +1,5 @@
 """Tests for abstract_string_to_int.py."""
+
 # pylint: disable=duplicate-code
 
 from __future__ import annotations
