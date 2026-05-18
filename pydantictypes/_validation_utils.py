@@ -19,7 +19,7 @@ def validate_optional_string_type(value: Any) -> str | None:  # noqa: ANN401
         The validated string or None if the value is None or empty string.
 
     Raises:
-        TypeError: If value is not None or a string.
+        ValueError: If value is not None or a string.
     """
     # Handle None before type check
     if value is None:
@@ -27,7 +27,8 @@ def validate_optional_string_type(value: Any) -> str | None:  # noqa: ANN401
 
     if not isinstance(value, str):
         msg = f"String required. Value is {value}. Type is {type(value)}."
-        raise TypeError(msg)
+        # Reason: must be ValueError: Pydantic v2 only wraps ValueError into ValidationError; otherwise TypeError propagates to the caller uncaught by Pydantic
+        raise ValueError(msg)  # noqa: TRY004
 
     if value == "":
         return None

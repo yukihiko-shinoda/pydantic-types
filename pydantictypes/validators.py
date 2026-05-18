@@ -12,7 +12,8 @@ def optional_strict_int_validator(value: Any) -> int | None:  # noqa: ANN401
         return None
     if not isinstance(value, int) or isinstance(value, bool):
         msg = "value is not a valid integer"
-        raise TypeError(msg)
+        # Reason: must be ValueError: Pydantic v2 only wraps ValueError into ValidationError; otherwise TypeError propagates to the caller uncaught by Pydantic
+        raise ValueError(msg)  # noqa: TRY004
     return value
 
 
@@ -29,5 +30,6 @@ def string_validator(value: Any) -> str:  # noqa: ANN401
     """Validate that value is a string."""
     if not isinstance(value, str):
         msg = "string required"
-        raise TypeError(msg)
+        # Reason: must be ValueError: Pydantic v2 only wraps ValueError into ValidationError; otherwise TypeError propagates to the caller uncaught by Pydantic
+        raise ValueError(msg)  # noqa: TRY004
     return value

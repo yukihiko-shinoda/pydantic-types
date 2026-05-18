@@ -38,8 +38,8 @@ class BaseTestOptionalType(ABC):
 
     # Reason: Test helper must accept Any type to test various invalid input types
     def _assert_error_raised(self, value: Any) -> None:  # noqa: ANN401
-        """Assert that creating a Stub with the value raises ValidationError or TypeError."""
-        with pytest.raises((ValidationError, TypeError)):
+        """Assert that creating a Stub with the value raises ValidationError."""
+        with pytest.raises(ValidationError):
             create(self.Stub, [value])
 
 
