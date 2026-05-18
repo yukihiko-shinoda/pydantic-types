@@ -1,4 +1,5 @@
 """Test for string_with_comma_to_int.py ."""
+
 # pylint: disable=duplicate-code
 
 import datetime
