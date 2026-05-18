@@ -84,11 +84,11 @@ class TestOptionalIntegerMustBeFromStr:
     )
     # Reason: Need Any to test various non-string types  # pylint: disable-next=line-too-long
     def test_validate_with_non_string_raises_type_error(self, non_string_value: Any, expected_type_name: str) -> None:  # noqa: ANN401
-        """Test that validate raises TypeError for non-string input."""
+        """Test that validate raises ValueError for non-string input."""
         mock_converter = Mock()
         validator = OptionalIntegerMustBeFromStr(mock_converter)
 
-        with pytest.raises(TypeError) as exc_info:
+        with pytest.raises(ValueError, match="String required") as exc_info:
             validator.validate(non_string_value)
 
         error_message = str(exc_info.value)
@@ -346,7 +346,7 @@ class TestAbstractModuleIntegration:
             ("456", 456, False, None),
             ("", None, False, None),
             ("fail", None, True, ValueError),
-            (123, None, True, TypeError),
+            (123, None, True, ValueError),
         ],
     )
     # Reason: Parametrized argument
@@ -380,8 +380,9 @@ class TestAbstractModuleIntegration:
     ) -> None:
         """Helper method to assert that the correct exception is raised."""
         if exception_type is ValueError:
-            with pytest.raises(ValueError, match="Conversion failed"):
-                validator.validate(test_input)
-        elif exception_type is TypeError:
-            with pytest.raises(TypeError, match="String required"):
-                validator.validate(test_input)
+            if isinstance(test_input, str):
+                with pytest.raises(ValueError, match="Conversion failed"):
+                    validator.validate(test_input)
+            else:
+                with pytest.raises(ValueError, match="String required"):
+                    validator.validate(test_input)

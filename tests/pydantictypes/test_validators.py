@@ -44,8 +44,8 @@ class TestOptionalStrictIntValidator:
         ],
     )
     def test_with_string_int_raises_error(self, value: str) -> None:
-        """Test that string integer input raises TypeError in strict mode."""
-        with pytest.raises(TypeError):
+        """Test that string integer input raises ValueError in strict mode."""
+        with pytest.raises(ValueError, match="value is not a valid integer"):
             optional_strict_int_validator(value)
 
     @pytest.mark.parametrize(
@@ -57,8 +57,8 @@ class TestOptionalStrictIntValidator:
         ],
     )
     def test_with_float_raises_error(self, value: float) -> None:
-        """Test that float input raises TypeError in strict mode."""
-        with pytest.raises(TypeError):
+        """Test that float input raises ValueError in strict mode."""
+        with pytest.raises(ValueError, match="value is not a valid integer"):
             optional_strict_int_validator(value)
 
     @pytest.mark.parametrize(
@@ -70,8 +70,8 @@ class TestOptionalStrictIntValidator:
     )
     # Reason: Parametrized argument
     def test_with_bool_raises_error(self, value: bool) -> None:  # noqa: FBT001
-        """Test that boolean input raises TypeError in strict mode."""
-        with pytest.raises(TypeError):
+        """Test that boolean input raises ValueError in strict mode."""
+        with pytest.raises(ValueError, match="value is not a valid integer"):
             optional_strict_int_validator(value)
 
 
@@ -182,9 +182,9 @@ class TestStringValidator:
             5.5,
         ],
     )
-    def test_with_non_string_raises_type_error(self, value: object) -> None:
-        """Test that non-string input raises TypeError."""
-        with pytest.raises(TypeError, match="string required"):
+    def test_with_non_string_raises_value_error(self, value: object) -> None:
+        """Test that non-string input raises ValueError."""
+        with pytest.raises(ValueError, match="string required"):
             string_validator(value)
 
 
