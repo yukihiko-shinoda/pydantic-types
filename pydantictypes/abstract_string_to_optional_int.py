@@ -134,7 +134,7 @@ def abstract_constringtooptionalint(  # noqa: PLR0913 pylint: disable=too-many-a
     le: int | None = None,
     multiple_of: int | None = None,
 ) -> list[Any]:
-    """A wrapper around `int` that allows for additional constraints.
+    """Create an annotated `int` type with additional constraints.
 
     Note: The strict parameter is kept for backward compatibility but is no longer used.
     Constraints are now validated directly in the OptionalIntegerMustBeFromStr class.

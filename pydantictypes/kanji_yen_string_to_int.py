@@ -29,7 +29,7 @@ def constringtoint(  # noqa: PLR0913  # pylint: disable=too-many-arguments
     le: int | None = None,
     multiple_of: int | None = None,
 ) -> type[int]:
-    """A wrapper around `int` that allows for additional constraints.
+    """Create an annotated `int` type with additional constraints.
 
     Args:
         strict: Whether to validate the integer in strict mode. Defaults to `None`.

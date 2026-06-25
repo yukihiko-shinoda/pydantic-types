@@ -144,7 +144,7 @@ def constringtooptionalstr(  # noqa: PLR0913 pylint: disable=too-many-arguments
     curtail_length: int | None = None,
     regex: str | None = None,
 ) -> type[str | None]:
-    """A wrapper around `Optional[str]` that allows for additional constraints.
+    """Create an annotated `Optional[str]` type with additional constraints.
 
     Args:
         strip_whitespace: Whether to strip leading and trailing whitespace. Defaults to False.

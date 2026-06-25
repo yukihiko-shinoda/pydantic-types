@@ -174,7 +174,7 @@ def constrained_string(
     max_length: int | None = None,
     equal_to: int | None = None,
 ) -> type[str]:
-    """A wrapper around `str` that allows for length constraints.
+    """Create an annotated `str` type with length constraints.
 
     Args:
         min_length: The minimum length of the string.
@@ -196,7 +196,7 @@ def constrained_optional_string(
     max_length: int | None = None,
     equal_to: int | None = None,
 ) -> type[str | None]:
-    """A wrapper around `Optional[str]` that allows for length constraints.
+    """Create an annotated `Optional[str]` type with length constraints.
 
     Args:
         min_length: The minimum length of the string.

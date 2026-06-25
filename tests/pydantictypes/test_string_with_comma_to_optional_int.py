@@ -92,7 +92,7 @@ class TestConstraintFunction(BaseTestConstraintFunction):
         return Optional[int]
 
     def supports_constraints(self) -> bool:
-        """Optional int types don't support constraint testing."""
+        """Return False as optional int types don't support constraint testing."""
         return False
 
 
@@ -107,5 +107,5 @@ class TestImportFallback(BaseTestImportFallback):
         return string_with_comma_to_optional_int
 
     def supports_unpack_fallback(self) -> bool:
-        """This module no longer uses Unpack (removed for Python 3.10 compatibility)."""
+        """Return False as this module no longer uses Unpack (removed for Python 3.10 compatibility)."""
         return False

@@ -300,7 +300,7 @@ class TestAbstractConstringtooptionalint:
 
 
 def _simple_converter(value: str) -> int:
-    """Simple string-to-int converter for tests."""
+    """Convert string to int for use in tests."""
     return int(value)
 
 
@@ -378,7 +378,7 @@ class TestAbstractModuleIntegration:
         test_input: str | int,
         exception_type: type | None,
     ) -> None:
-        """Helper method to assert that the correct exception is raised."""
+        """Assert that the correct exception is raised."""
         if exception_type is ValueError:
             if isinstance(test_input, str):
                 with pytest.raises(ValueError, match="Conversion failed"):

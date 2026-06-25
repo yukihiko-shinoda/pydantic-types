@@ -258,5 +258,5 @@ class TestImportFallback(BaseTestImportFallback):
         return string_with_length_constraint
 
     def supports_unpack_fallback(self) -> bool:
-        """This module does not support Unpack fallback testing."""
+        """Return False as this module does not support Unpack fallback testing."""
         return False

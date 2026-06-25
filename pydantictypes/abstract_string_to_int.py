@@ -143,7 +143,7 @@ def constringtoint(  # noqa: PLR0913 pylint: disable=too-many-arguments
     le: int | None = None,  # pylint: disable=invalid-name
     multiple_of: int | None = None,
 ) -> type[int]:
-    """Creates constrained type for converting string with comma to int value."""
+    """Create constrained type for converting string with comma to int value."""
     # use kwargs then define conf in a dict to aid with IDE type hinting
     namespace = {"strict": strict, "gt": gt, "ge": ge, "lt": lt, "le": le, "multiple_of": multiple_of}
     return type(type_name, (type_class,), namespace)
