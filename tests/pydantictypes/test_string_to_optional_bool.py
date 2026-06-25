@@ -102,5 +102,5 @@ class TestImportFallback(BaseTestImportFallback):
         return string_to_optional_bool
 
     def supports_unpack_fallback(self) -> bool:
-        """This module does not support Unpack fallback testing."""
+        """Return False as this module does not support Unpack fallback testing."""
         return False
