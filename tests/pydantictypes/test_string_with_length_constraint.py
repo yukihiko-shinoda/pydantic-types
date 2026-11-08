@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: Copyright (c) 2026 Yukihiko Shinoda
+# SPDX-License-Identifier: MIT
 """Tests for string_with_length_constraint.py."""
 
 from __future__ import annotations
@@ -253,7 +255,7 @@ class TestImportFallback(BaseTestImportFallback):
     def get_module(self) -> ModuleType:
         """Return the module to test for import fallback."""
         # Reason: For testing import fallback behavior
-        from pydantictypes import string_with_length_constraint  # pylint: disable=import-outside-toplevel  # noqa: PLC0415,I001
+        from pydantictypes import string_with_length_constraint  # pylint: disable=import-outside-toplevel  # noqa: PLC0415
 
         return string_with_length_constraint
 

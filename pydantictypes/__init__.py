@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025 Yukihiko Shinoda
+# SPDX-License-Identifier: MIT
 """Top-level package for Pydantic Types."""
 
 from pydantictypes.empty_string_to_none import *  # noqa: F403

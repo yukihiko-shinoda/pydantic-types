@@ -1,9 +1,12 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025 Yukihiko Shinoda
+# SPDX-License-Identifier: MIT
 """Tests for abstract_string_to_optional_int.py."""
 
 # pylint: disable=duplicate-code
 
 from __future__ import annotations
 
+import dataclasses
 from typing import Any
 from unittest.mock import Mock
 
@@ -225,38 +228,15 @@ class TestAbstractConstringtooptionalint:
             assert multiple_constraint.multiple_of == expected_result.multiple_of
 
     @pytest.mark.parametrize(
-        ("gt", "ge", "lt", "le", "multiple_of", "expected_length"),
+        ("params", "expected_length"),
         [
-            (1, 2, 100, 99, 5, 2),
-            (0, 1, 50, 49, 10, 2),
+            (OptionalIntConstraintListParams(gt=1, ge=2, lt=100, le=99, multiple_of=5), 2),
+            (OptionalIntConstraintListParams(gt=0, ge=1, lt=50, le=49, multiple_of=10), 2),
         ],
     )
-    # Reason: Parametrized argument  # pylint: disable-next=too-many-arguments,too-many-positional-arguments
-    def test_all_parameters_together(  # noqa: PLR0913
-        self,
-        gt: int,
-        ge: int,
-        lt: int,
-        le: int,
-        multiple_of: int,
-        expected_length: int,
-    ) -> None:
+    def test_all_parameters_together(self, params: OptionalIntConstraintListParams, expected_length: int) -> None:
         """Test function with all parameters set to ensure proper interaction."""
-        result = abstract_constringtooptionalint(  # pylint: disable=duplicate-code
-            gt=gt,
-            ge=ge,
-            lt=lt,
-            le=le,
-            multiple_of=multiple_of,
-        )
-
-        params = OptionalIntConstraintListParams(
-            gt=gt,
-            ge=ge,
-            lt=lt,
-            le=le,
-            multiple_of=multiple_of,
-        )
+        result = abstract_constringtooptionalint(**dataclasses.asdict(params))
         asserter = OptionalIntConstraintListAsserter(result, params)
         asserter.assert_basic_structure(expected_length)
         asserter.assert_interval_constraints()

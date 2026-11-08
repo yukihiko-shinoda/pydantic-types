@@ -1,6 +1,8 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025 Yukihiko Shinoda
+# SPDX-License-Identifier: MIT
 """Tests for symbol_yen_string_to_int.py ."""
 
-import datetime
+import datetime as dt
 from typing import TYPE_CHECKING
 from typing import Any
 from typing import Callable
@@ -60,7 +62,7 @@ class Test:
             r"$ 1",
             "",
             None,
-            datetime.date(2020, 1, 1),
+            dt.date(2020, 1, 1),
             1,
         ],
     )

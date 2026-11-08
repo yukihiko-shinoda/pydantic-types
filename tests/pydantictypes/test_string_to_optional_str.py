@@ -1,8 +1,10 @@
+# SPDX-FileCopyrightText: Copyright (c) 2026 Yukihiko Shinoda
+# SPDX-License-Identifier: MIT
 """Tests for string_to_optional_str.py."""
 
 from __future__ import annotations
 
-import datetime
+import datetime as dt
 from typing import TYPE_CHECKING
 from typing import Any
 
@@ -45,7 +47,7 @@ class Test:
         "value",
         [
             None,
-            datetime.date(2020, 1, 1),
+            dt.date(2020, 1, 1),
             1,
             123,
             True,
