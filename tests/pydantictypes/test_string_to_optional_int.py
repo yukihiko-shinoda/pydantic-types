@@ -1,8 +1,10 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025 Yukihiko Shinoda
+# SPDX-License-Identifier: MIT
 """Tests for string_to_optional_int.py ."""
 
 from __future__ import annotations
 
-import datetime
+import datetime as dt
 from typing import TYPE_CHECKING
 from typing import Any
 from typing import Callable
@@ -62,7 +64,7 @@ class Test(BaseTestOptionalType):
             "¥ 1",
             "$1",
             "$ 1",
-            datetime.date(2020, 1, 1),
+            dt.date(2020, 1, 1),
             1,
         ],
     )

@@ -1,6 +1,8 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025 Yukihiko Shinoda
+# SPDX-License-Identifier: MIT
 """Tests for string_to_datetime.py ."""
 
-import datetime
+import datetime as dt
 from typing import Any
 
 import pytest
@@ -34,7 +36,7 @@ class TestStringSlashToDateTime:
     def test(self, value: str, expected_year: int, expected_month: int, expected_day: int) -> None:
         """Property should be converted to datetime.date."""
         stub = create(StubStringSlashToDateTime, [value])
-        assert isinstance(stub.date_, datetime.date)
+        assert isinstance(stub.date_, dt.date)
         assert stub.date_.year == expected_year
         assert stub.date_.month == expected_month
         assert stub.date_.day == expected_day
@@ -54,7 +56,7 @@ class TestStringSlashToDateTime:
             "2020",
             "",
             None,
-            datetime.date(2020, 1, 1),
+            dt.date(2020, 1, 1),
             1,
         ],
     )
@@ -71,7 +73,7 @@ class TestStringSlashToDateTime:
             None,
             [],
             {},
-            datetime.date(2020, 1, 1),
+            dt.date(2020, 1, 1),
         ],
     )
     # Reason: Need Any to test various invalid types in parametrized test
@@ -100,7 +102,7 @@ class TestStringNumberOnlyToDateTime:
     def test(self, value: str, expected_year: int, expected_month: int, expected_day: int) -> None:
         """Property should be converted to datetime.date."""
         stub = create(StubStringNumberOnlyToDateTime, [value])
-        assert isinstance(stub.date_, datetime.date)
+        assert isinstance(stub.date_, dt.date)
         assert stub.date_.year == expected_year
         assert stub.date_.month == expected_month
         assert stub.date_.day == expected_day
@@ -122,7 +124,7 @@ class TestStringNumberOnlyToDateTime:
             "2020",
             "",
             None,
-            datetime.date(2020, 1, 1),
+            dt.date(2020, 1, 1),
             1,
         ],
     )
@@ -153,7 +155,7 @@ class TestStringSlashMonthDayOnlyToDatetime:
         """Property should be converted to datetime.date."""
         expected_year = 1904
         stub = create(StubStringSlashMonthDayOnlyToDatetime, [value])
-        assert isinstance(stub.date_, datetime.date)
+        assert isinstance(stub.date_, dt.date)
         assert stub.date_.year == expected_year
         assert stub.date_.month == expected_month
         assert stub.date_.day == expected_day
@@ -175,7 +177,7 @@ class TestStringSlashMonthDayOnlyToDatetime:
             "01",
             "",
             None,
-            datetime.date(2020, 1, 1),
+            dt.date(2020, 1, 1),
             1,
         ],
     )
@@ -192,7 +194,7 @@ class TestStringSlashMonthDayOnlyToDatetime:
             None,
             [],
             {},
-            datetime.date(2020, 1, 1),
+            dt.date(2020, 1, 1),
         ],
     )
     # Reason: Need Any to test various invalid types in parametrized test

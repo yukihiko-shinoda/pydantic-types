@@ -1,8 +1,10 @@
+# SPDX-FileCopyrightText: Copyright (c) 2026 Yukihiko Shinoda
+# SPDX-License-Identifier: MIT
 """Tests for string_to_optional_bool.py."""
 
 from __future__ import annotations
 
-import datetime
+import datetime as dt
 from typing import TYPE_CHECKING
 from typing import Any
 
@@ -77,7 +79,7 @@ class Test:
             "-1",
             " ",
             None,
-            datetime.date(2020, 1, 1),
+            dt.date(2020, 1, 1),
             1,
             0,
             True,

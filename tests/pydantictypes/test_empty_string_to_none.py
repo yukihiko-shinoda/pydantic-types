@@ -1,8 +1,10 @@
+# SPDX-FileCopyrightText: Copyright (c) 2026 Yukihiko Shinoda
+# SPDX-License-Identifier: MIT
 """Tests for empty_string_to_none.py."""
 
 from __future__ import annotations
 
-import datetime
+import datetime as dt
 from typing import TYPE_CHECKING
 from typing import Any
 
@@ -39,7 +41,7 @@ class Test:
             " ",
             "0",
             None,
-            datetime.date(2020, 1, 1),
+            dt.date(2020, 1, 1),
             1,
             0,
         ],

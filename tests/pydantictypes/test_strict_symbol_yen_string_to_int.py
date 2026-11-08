@@ -1,6 +1,8 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025 Yukihiko Shinoda
+# SPDX-License-Identifier: MIT
 """Tests for StrictSymbolYenStringToInt."""
 
-import datetime
+import datetime as dt
 from typing import Any
 
 import pytest
@@ -56,7 +58,7 @@ class TestStrictSymbolYenStringToInt:
             "",
             None,
             # Wrong types
-            datetime.date(2020, 1, 1),
+            dt.date(2020, 1, 1),
             1,
             1.0,
             [],
